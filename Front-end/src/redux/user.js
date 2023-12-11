@@ -2,33 +2,22 @@ import produce from "immer";
 import { selectUser, selectLogin } from "./selectors";
 
 const initialState = {
-	
-	
   email: '',
   password: '',
   firstName: '',
   lastName: '',
   userName: '',
-
-  
   data: null,
   error: null,
   url: 'http://localhost:3001/api/v1/user/profile',
-
-  userNameIsThere: false,
-  
-	
+  userNameIsThere: false,	
 };
-
 
 const U_RESOLVED = 'user/resolved';
 const U_REJECTED = 'user/rejected';
 
-
-
 const userResolved = (data) => ({type : U_RESOLVED, payload : data});
 const userRejected = (error) => ({type : U_REJECTED, payload : error});
-
 
 export const setUserName = (userName) => ({type: 'SET_USER_NAME', payload: userName});
 const noUserName = ({type : 'NO_USER_NAME'})
@@ -36,11 +25,7 @@ const noUserName = ({type : 'NO_USER_NAME'})
 export default function userReducer(state = initialState, action) {
   return produce(state, draft => {
       switch (action.type) {
-
-        
           case U_RESOLVED: {
-                
-            
             draft.data = action.payload
             draft.firstName = action.payload.body.firstName
             draft.lastName = action.payload.body.lastName
@@ -50,108 +35,66 @@ export default function userReducer(state = initialState, action) {
             } else {
               draft.userNameIsThere = false
             }
-            
             return
-              
-              
-
           }
           case U_REJECTED: {
-              
-                  draft.error = action.payload
-
-
-                  
-                  return
-              
-
+            draft.error = action.payload
+            return
           }
           case 'SET_USER_NAME':
-          return { ...state, userName: action.payload };
-
+            return { ...state, userName: action.payload };
           case 'NO_USER_NAME':
-            
             draft.userNameIsThere = false
-            return;
-          
+            return
           default:
-              return
+            return
       }
   });
 }
 
+//Envoie une requête POST pour récupérer les informations personnelles de l'utilisateur
 export function fetchProfile(store) {
-  
   return async function() {
-    
+    try {
+      const url = selectUser(store.getState()).url;
+      const token = selectLogin(store.getState()).token;
   
-  
+      const response = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json",
+            "Authorization": "Bearer " + token },
+          });
       
-     
-      try {
-          
-          
-          const url = selectUser(store.getState()).url;
-          const token = selectLogin(store.getState()).token;
-      
-          const response = await fetch(url, {
-              method: "POST",
-              headers: { "Content-Type": "application/json",
-                "Authorization": "Bearer " + token },
-  
-              });
-          
-          const data = await response.json();
-          
-          
-          store.dispatch(userResolved(data));
-          
-          
-      } catch (error) {
-      
-      store.dispatch(userRejected(error))
-      
-      }
+      const data = await response.json();
+      store.dispatch(userResolved(data));
+    } catch (error) {
+      store.dispatch(userRejected(error));
+    }
   }
 }
 
+//Utilise l'état actuel du store pour envoyer une requête PUT pour mettre à jour le nom d'utilisateur
 export function updateProfile(store) {
   return async function() {
-    
-
     try {
-        
-        
-        const url = selectUser(store.getState()).url;
-        const token = selectLogin(store.getState()).token;
-        const userName = selectUser(store.getState()).userName;
-        
-        if (userName === '') {
-          
-          store.dispatch(noUserName)
-
-        } else {
-          await fetch(url, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json",
-              "Authorization": "Bearer " + token },
-            body: JSON.stringify({
-              "userName" : userName
+      const url = selectUser(store.getState()).url;
+      const token = selectLogin(store.getState()).token;
+      const userName = selectUser(store.getState()).userName;
+      
+      if (userName === '') {
+        store.dispatch(noUserName)
+      } else {
+        await fetch(url, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json",
+            "Authorization": "Bearer " + token },
+          body: JSON.stringify({
+            "userName" : userName
           })
-
-            });
-        
-        
-        }
-
-        
-        
-        
-        
+        });
+      }
     } catch (error) {
-    
-    store.dispatch(userRejected(error))
-    
+      store.dispatch(userRejected(error))
     }
-}
+  }
 }

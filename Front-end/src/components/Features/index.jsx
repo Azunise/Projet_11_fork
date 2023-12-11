@@ -1,6 +1,6 @@
 import React from 'react';
 
-
+//Prend un array en props et en fait l'affichage d'un des arguments de vente de ArgenBank
 function Features(item) {
    const props = item.props
    return (

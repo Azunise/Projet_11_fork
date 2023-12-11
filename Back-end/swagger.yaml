@@ -133,8 +133,7 @@ paths:
           name: accountId
           description: The ID of the account
           required: true
-          schema:
-            type: integer
+          type: integer
       produces:
         - application/json
       responses:
@@ -159,8 +158,7 @@ paths:
           name: accountId
           description: The ID of the account
           required: true
-          schema:
-            type: integer
+          type: integer
       produces:
         - application/json
       responses:
@@ -168,6 +166,36 @@ paths:
           description: Successfully fetched the transactions
           schema:
             $ref: '#/definitions/TransactionsResponse'
+        '400':
+          description: Invalid Fields
+        '500':
+          description: Internal Server Error
+    post:
+      security:
+        - Bearer: []
+      tags:
+        - User Module
+      summary: Create a new transaction
+      description: API creating a transaction
+      parameters:
+        - in: path
+          name: accountId
+          description: The ID of the account
+          required: true
+          type: integer
+        - in: body
+          name: body
+          description: all the informations for a new transaction
+          required: true
+          schema:
+            $ref: '#/definitions/Transactions'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully added the transaction
+          schema:
+            $ref: '#/definitions/TransactionResponse'
         '400':
           description: Invalid Fields
         '500':
@@ -185,14 +213,12 @@ paths:
           name: accountId
           description: The ID of the account
           required: true
-          schema:
-            type: integer
+          type: integer
         - in: path
           name: transactionId
           description: The ID of the transaction
           required: true
-          schema:
-            type: integer
+          type: integer
       produces:
         - application/json
       responses:
@@ -216,14 +242,12 @@ paths:
           name: accountId
           description: The ID of the account
           required: true
-          schema:
-            type: integer
+          type: integer
         - in: path
           name: transactionId
           description: The ID of the transaction
           required: true
-          schema:
-            type: integer
+          type: integer
         - in: body
           name: body
           description: Update "category" and "note"
@@ -241,9 +265,36 @@ paths:
           description: Invalid Fields
         '500':
           description: Internal Server Error
+    delete:
+      security:
+        - Bearer: []
+      tags:
+        - User Module
+      summary: Delete a transaction
+      description: API removing a transaction from the server
+      parameters:
+        - in: path
+          name: accountId
+          description: The ID of the account
+          required: true
+          type: integer
+        - in: path
+          name: transactionId
+          description: The ID of the transaction
+          required: true
+          type: integer
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully deleted the transaction
+          schema:
+            $ref: '#/definitions/DeletionResponse'
+        '400':
+          description: Invalid Fields
+        '500':
+          description: Internal Server Error
 
-
-  
 securityDefinitions:
   Bearer:
     type: apiKey
@@ -400,3 +451,10 @@ definitions:
         type: string
       body:
         $ref: '#/definitions/Transaction'
+  DeletionResponse:
+    type: object
+    properties:
+      status:
+        type: integer
+      message:
+        type: string

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-
+//Prend un array en props et en fait l'affichage d'un compte bancaire
 function Account(item) {
    const props = item.props
    return (

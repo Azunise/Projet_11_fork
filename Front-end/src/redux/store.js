@@ -3,8 +3,6 @@ import thunk from 'redux-thunk';
 import loginReducer from './login'
 import credentialsReducer from './credentials';
 import userReducer from './user'
-
-
 import storage from 'redux-persist/lib/storage';
 import { persistStore, persistCombineReducers } from 'redux-persist';
 
@@ -13,21 +11,18 @@ const persistConfig = {
   storage,
 }
 
-
-
+//Combine tous les reducers en un reducer persistant
 const persistedReducer = persistCombineReducers(persistConfig, {
   login : loginReducer,
   credentials : credentialsReducer,
-  user : userReducer
+  user : userReducer,
 })
-
-
 
 const store = configureStore({
   reducer: persistedReducer,
   middleware : [thunk],
-  devTools: process.env.NODE_ENV
-  });
+  devTools: process.env.NODE_ENV,
+});
 
 export default store;
 export  const persistore = persistStore(store);
